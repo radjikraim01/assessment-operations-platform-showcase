@@ -1,0 +1,540 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - Assessment Operations Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--petroleum-navy);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-bright);
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        /* Info Section */
+        .info-section {
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Form */
+        .form-section {
+            margin-top: 32px;
+        }
+
+        .form-section-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--amber-warning);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 6px;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .btn-primary {
+            background: var(--gradient-amber);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-bright);
+            color: var(--text-secondary);
+            margin-left: 12px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .form-actions .btn {
+            width: auto;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--safety-green);
+            color: var(--safety-green);
+        }
+
+        .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--danger-red);
+            color: var(--danger-red);
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <div class="nav-divider"></div>
+                <a href="/dashboard/users" class="nav-link">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link">B2B Authorizations</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link">Audit Log</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="/dashboard/profile" class="nav-link active">Profile</a>
+            <div class="nav-divider"></div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Admin Profile</h1>
+            <p class="page-subtitle">Manage your account settings</p>
+        </div>
+
+        <!-- Account Information Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-person-circle" style="font-size: 32px; color: var(--amber-warning);"></i>
+                <h2 class="card-title">Account Information</h2>
+            </div>
+
+            <div class="info-section">
+                <div class="info-group">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value" id="adminEmail">{{ session.admin_user.email }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value" id="adminName">{{ session.admin_user.full_name }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lock" style="font-size: 32px; color: var(--amber-warning);"></i>
+                <h2 class="card-title">Change Password</h2>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password *</label>
+                    <input
+                        type="password"
+                        id="currentPassword"
+                        name="currentPassword"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password *</label>
+                    <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        required
+                        autocomplete="new-password"
+                    >
+                    <div class="password-requirements">
+                        Must be at least 8 characters long
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password *</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        required
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Change Password
+                    </button>
+                    <a href="/dashboard/users" class="btn btn-secondary">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Logout (POST method required)
+        async function logout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/admin/login';
+            }
+        }
+
+        const form = document.getElementById('changePasswordForm');
+        const alertContainer = document.getElementById('alertContainer');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Clear previous alerts
+            alertContainer.innerHTML = '';
+
+            // Get form values
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Client-side validation
+            if (newPassword.length < 8) {
+                showAlert('New password must be at least 8 characters', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match', 'error');
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                showAlert('New password must be different from current password', 'error');
+                return;
+            }
+
+            // Show loading state
+            form.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/admin/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Password changed successfully! You can now use your new password to log in.', 'success');
+                    form.reset();
+
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showAlert(data.error || 'Failed to change password', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                form.classList.remove('loading');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            alertContainer.appendChild(alert);
+
+            // Auto-dismiss error alerts after 5 seconds
+            if (type === 'error') {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Authorization Requests - Assessment Operations Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Dark Mode - Industrial Palette */
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --warning-yellow: #fbbf24;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--petroleum-navy);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            row-gap: 8px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-bright);
+        }
+
+        .admin-info {
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 8px 16px;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb a {
+            color: var(--technical-cyan);
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            font-size: 12px;
+        }
+
+        .page-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .btn-refresh {
+            padding: 12px 24px;
+            background: var(--gradient-amber);
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .filters {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--amber-warning);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .request-card {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .request-card:hover {
+            border-color: var(--amber-warning);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .request-meta {
+            flex: 1;
+        }
+
+        .request-id {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .base-role {
+            font-size: 14px;
+            color: var(--technical-cyan);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--warning-yellow);
+            border: 1px solid var(--warning-yellow);
+        }
+
+        .status-processing {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--technical-cyan);
+            border: 1px solid var(--technical-cyan);
+        }
+
+        .status-ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--safety-green);
+            border: 1px solid var(--safety-green);
+        }
+
+        .status-denied {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        .status-failed {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        .card-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-section:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .jd-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .jd-preview strong {
+            color: var(--text-primary);
+        }
+
+        .questions-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .question-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .btn-approve {
+            background: var(--safety-green);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-deny {
+            background: transparent;
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+        }
+
+        .btn-deny:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-bright);
+            border-top-color: var(--technical-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            padding: 16px 24px;
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+        }
+
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--safety-green);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-red);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--deep-ocean);
+            border: 2px solid var(--border-bright);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--amber-warning);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border-bright);
+            color: var(--text-secondary);
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                padding-top: 120px;
+            }
+
+            .top-nav {
+                height: auto;
+                min-height: 64px;
+                padding: 10px 16px;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav-left,
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 160px;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            .page-title {
+                font-size: 28px;
+                letter-spacing: 1px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .card-header,
+            .card-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .actions,
+            .modal-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .actions .btn,
+            .modal-actions .btn {
+                flex: 1 1 100%;
+            }
+
+            .requests-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .toast {
+                right: 12px;
+                left: 12px;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <div class="nav-divider"></div>
+                <a href="/dashboard/users" class="nav-link">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link active">B2B Authorizations</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link">Audit Log</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="/dashboard/profile" class="nav-link">Profile</a>
+            <div class="nav-divider"></div>
+            <div class="admin-info">
+                <i class="bi bi-person-circle"></i> <span id="adminEmail">Loading...</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/">Home</a>
+                    <i class="bi bi-chevron-right"></i>
+                    <span>B2B Authorization Requests</span>
+                </div>
+                <h1 class="page-title">B2B Authorization Requests</h1>
+            </div>
+            <button class="btn-refresh" onclick="loadRequests()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <label class="filter-label">Status Filter:</label>
+            <select class="filter-select" id="statusFilter" onchange="loadRequests()">
+                <option value="pending">Pending</option>
+                <option value="approved_processing">Processing</option>
+                <option value="approved_ready">Ready</option>
+                <option value="denied">Denied</option>
+                <option value="failed">Failed</option>
+                <option value="all">All</option>
+            </select>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="statPending">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statProcessing">0</div>
+                <div class="stat-label">Processing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statReady">0</div>
+                <div class="stat-label">Ready</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+
+        <!-- Requests Grid -->
+        <div class="requests-grid" id="requestsGrid">
+            <!-- Requests will be populated here -->
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="bi bi-check-circle"></i>
+        <span id="toastMessage">Success</span>
+    </div>
+
+    <!-- Deny Modal -->
+    <div class="modal" id="denyModal">
+        <div class="modal-content">
+            <div class="modal-title">Deny Authorization Request</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Quick Deny:</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button class="btn" style="background: var(--steel-gray); color: var(--text-secondary); font-size: 11px; padding: 6px 12px;" onclick="document.getElementById('denyReason').value='Role not supported'">Role not supported</button>
+                        <button class="btn" style="background: var(--steel-gray); color: var(--text-secondary); font-size: 11px; padding: 6px 12px;" onclick="document.getElementById('denyReason').value='Unauthorized partner'">Unauthorized partner</button>
+                        <button class="btn" style="background: var(--steel-gray); color: var(--text-secondary); font-size: 11px; padding: 6px 12px;" onclick="document.getElementById('denyReason').value='Duplicate request'">Duplicate request</button>
+                        <button class="btn" style="background: var(--steel-gray); color: var(--text-secondary); font-size: 11px; padding: 6px 12px;" onclick="document.getElementById('denyReason').value='Test request'">Test request</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reason for Denial:</label>
+                    <textarea class="form-textarea" id="denyReason" placeholder="Enter reason or click a quick option above..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeDenyModal()">Cancel</button>
+                <button class="btn btn-deny" onclick="confirmDeny()">Deny Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDenyRequestId = null;
+        let autoRefreshInterval = null;
+
+        // Load admin user info
+        async function loadAdminInfo() {
+            try {
+                const response = await fetch('/api/admin/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('adminEmail').textContent = data.email;
+                } else {
+                    window.location.href = '/admin/login';
+                }
+            } catch (error) {
+                console.error('Error loading admin info:', error);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Load requests
+        async function loadRequests() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const grid = document.getElementById('requestsGrid');
+
+            // Preserve scroll position before reloading content
+            const scrollY = window.scrollY;
+            const isAutoRefresh = grid.children.length > 0 &&
+                !grid.querySelector('.spinner');
+
+            if (!isAutoRefresh) {
+                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);"><div class="spinner"></div> Loading...</div>';
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/b2b-requests?status=${statusFilter}`);
+                const data = await response.json();
+
+                if (data.requests.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <h3>No requests found</h3>
+                            <p>No ${statusFilter === 'all' ? '' : statusFilter} requests at this time.</p>
+                        </div>
+                    `;
+                    updateStats(data.requests);
+                    return;
+                }
+
+                grid.innerHTML = data.requests.map(req => renderRequestCard(req)).join('');
+                updateStats(data.requests);
+
+                // Restore scroll position after content update
+                if (isAutoRefresh) {
+                    window.scrollTo(0, scrollY);
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                showToast('Error loading requests', 'error');
+            }
+        }
+
+        // Update stats
+        function updateStats(requests) {
+            const pending = requests.filter(r => r.status === 'pending').length;
+            const processing = requests.filter(r => r.status === 'approved_processing').length;
+            const ready = requests.filter(r => r.status === 'approved_ready').length;
+
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statProcessing').textContent = processing;
+            document.getElementById('statReady').textContent = ready;
+            document.getElementById('statTotal').textContent = requests.length;
+        }
+
+        // Render request card
+        function renderRequestCard(req) {
+            const statusClass = {
+                'pending': 'status-pending',
+                'approved_processing': 'status-processing',
+                'approved_ready': 'status-ready',
+                'denied': 'status-denied',
+                'failed': 'status-failed'
+            }[req.status] || 'status-pending';
+
+            const statusLabel = {
+                'pending': 'Pending Approval',
+                'approved_processing': 'Processing',
+                'approved_ready': 'Ready',
+                'denied': 'Denied',
+                'failed': 'Failed'
+            }[req.status] || req.status;
+
+            const jdData = req.custom_jd_data || {};
+            const requestedTitle = jdData.requested_job_title || 'N/A';
+            const resolvedRole = jdData.resolved_role_title || 'N/A';
+            const resolvedFunction = jdData.resolved_function || '';
+            const jdTitle = jdData.job_title || '';
+            const jdLocation = jdData.location || '';
+            const hasCustomJd = jdTitle && jdTitle !== requestedTitle;
+            const mode = hasCustomJd ? 'Full JD' : 'Title-Only';
+
+            const timestamp = new Date(req.requested_at).toLocaleString();
+
+            let actionsHtml = '';
+            if (req.status === 'pending') {
+                actionsHtml = `
+                    <div class="actions">
+                        <button class="btn btn-approve" onclick="approveRequest(${req.request_id})">
+                            <i class="bi bi-check-lg"></i> Approve
+                        </button>
+                        <button class="btn btn-deny" onclick="openDenyModal(${req.request_id})">
+                            <i class="bi bi-x-lg"></i> Deny
+                        </button>
+                    </div>
+                `;
+            } else if (req.status === 'approved_processing') {
+                actionsHtml = `
+                    <div class="actions">
+                        <div style="color: var(--technical-cyan); font-size: 13px;">
+                            <div class="spinner"></div> AI generating questions...
+                        </div>
+                    </div>
+                `;
+            } else if (req.status === 'approved_ready') {
+                const questionCount = req.questions ? req.questions.length : 0;
+                actionsHtml = `
+                    <div class="actions">
+                        <div style="color: var(--safety-green); font-size: 13px;">
+                            <i class="bi bi-check-circle"></i> ${questionCount} questions generated
+                        </div>
+                    </div>
+                `;
+            } else if (req.status === 'denied') {
+                actionsHtml = `
+                    <div class="actions">
+                        <div style="color: var(--danger-red); font-size: 13px;">
+                            <i class="bi bi-x-circle"></i> Denied by ${req.reviewed_by || 'Admin'}
+                        </div>
+                    </div>
+                `;
+            } else if (req.status === 'failed') {
+                actionsHtml = `
+                    <div class="actions">
+                        <div style="color: var(--danger-red); font-size: 13px;">
+                            <i class="bi bi-exclamation-triangle"></i> Processing failed
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="request-card">
+                    <div class="card-header">
+                        <div class="request-meta">
+                            <div class="request-id">#${req.request_id} &middot; ${escapeHtml(mode)}</div>
+                            <div class="company-name">${escapeHtml(req.company_name)}</div>
+                            <div class="base-role" style="margin-top: 4px;">
+                                <strong>Requested:</strong> ${escapeHtml(requestedTitle)}
+                            </div>
+                            <div class="base-role" style="margin-top: 2px;">
+                                <strong>Resolved:</strong> ${escapeHtml(resolvedRole)}
+                                ${resolvedFunction ? `<span style="color: var(--text-tertiary); margin-left: 8px;">(${escapeHtml(resolvedFunction)})</span>` : ''}
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 2px;">
+                                ID: ${escapeHtml(req.base_role_id)}
+                            </div>
+                        </div>
+                        <div class="status-badge ${statusClass}">${statusLabel}</div>
+                    </div>
+
+                    ${hasCustomJd ? `
+                    <div class="card-section">
+                        <div class="section-title">Custom Job Description</div>
+                        <div class="jd-preview">
+                            <strong>JD Title:</strong> ${escapeHtml(jdTitle)}<br>
+                            ${jdLocation ? `<strong>Location:</strong> ${escapeHtml(jdLocation)}` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${req.review_notes ? `
+                        <div class="card-section">
+                            <div class="section-title">Review Notes</div>
+                            <div class="jd-preview">${escapeHtml(req.review_notes)}</div>
+                        </div>
+                    ` : ''}
+
+                    ${req.processing_error ? `
+                        <div class="card-section">
+                            <div class="section-title">Error Details</div>
+                            <div class="jd-preview" style="color: var(--danger-red);">${escapeHtml(req.processing_error)}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="card-footer">
+                        <div class="timestamp">
+                            <i class="bi bi-clock"></i> ${timestamp}
+                        </div>
+                        ${actionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Approve request
+        async function approveRequest(requestId) {
+            if (!confirm('Approve this B2B authorization request? This will start AI processing.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/b2b-requests/${requestId}/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notes: 'Approved' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Request approved! Processing in background...', 'success');
+                    loadRequests();
+                } else {
+                    showToast(data.error || 'Error approving request', 'error');
+                }
+            } catch (error) {
+                console.error('Error approving request:', error);
+                showToast('Network error', 'error');
+            }
+        }
+
+        // Open deny modal
+        function openDenyModal(requestId) {
+            currentDenyRequestId = requestId;
+            document.getElementById('denyReason').value = '';
+            document.getElementById('denyModal').classList.add('show');
+        }
+
+        // Close deny modal
+        function closeDenyModal() {
+            document.getElementById('denyModal').classList.remove('show');
+            currentDenyRequestId = null;
+        }
+
+        // Confirm deny
+        async function confirmDeny() {
+            const reason = document.getElementById('denyReason').value.trim();
+
+            if (!reason) {
+                alert('Please enter a reason for denial');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/b2b-requests/${currentDenyRequestId}/deny`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Request denied', 'success');
+                    closeDenyModal();
+                    loadRequests();
+                } else {
+                    showToast(data.error || 'Error denying request', 'error');
+                }
+            } catch (error) {
+                console.error('Error denying request:', error);
+                showToast('Network error', 'error');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toast.className = `toast toast-${type} show`;
+            toastMessage.textContent = message;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-refresh for processing requests
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                const statusFilter = document.getElementById('statusFilter').value;
+                if (statusFilter === 'approved_processing' || statusFilter === 'pending' || statusFilter === 'all') {
+                    loadRequests();
+                }
+            }, 10000); // Refresh every 10 seconds
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAdminInfo();
+            loadRequests();
+            startAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,21 @@
+# Core framework
+Flask==3.0.0
+Flask-CORS==4.0.0
+Flask-Limiter==3.5.0
+Flask-Compress==1.14
+
+# Database
+psycopg2-binary==2.9.9
+
+# Security and validation
+bcrypt==4.1.2
+pydantic==2.10.6
+
+python-dotenv==1.0.0
+requests==2.31.0
+gunicorn==21.2.0
+
+# Development tooling
+pytest==8.0.0
+black==24.1.0
+flake8==7.0.0

@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Details - Assessment Operations Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Dark Mode - Industrial Palette */
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            
+            /* Additional variables for consistency */
+            --border: #475569;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --card-bg: #132032;
+            --bg: #0a1628;
+            --sidebar-bg: #132032;
+            --primary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+        }
+
+        /* Light Mode */
+        [data-theme="light"] {
+            --petroleum-navy: #f8fafc;
+            --deep-ocean: #ffffff;
+            --steel-gray: #f1f5f9;
+            --amber-warning: #ea580c;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --border-bright: #cbd5e1;
+            --gradient-petroleum: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            --gradient-amber: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+            
+            /* Additional variables for light mode */
+            --border: #cbd5e1;
+            --text: #0f172a;
+            --text-light: #475569;
+            --card-bg: #ffffff;
+            --bg: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --primary: #0891b2;
+            --accent: #ea580c;
+            --success: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* NAVIGATION */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-bright);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--amber-warning);
+            transform: rotate(45deg);
+        }
+
+        .theme-toggle i {
+            font-size: 20px;
+            color: var(--amber-warning);
+        }
+
+        body {
+        font-family: 'IBM Plex Mono', monospace;  /* CHANGED */
+        background: var(--petroleum-navy);  /* CHANGED */
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding-top: 64px;  /* NEW - for fixed nav */
+        }
+        body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+        repeating-linear-gradient(90deg, rgba(100,116,139,0.03) 0px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(100,116,139,0.03) 0px, transparent 1px, transparent 40px);
+        pointer-events: none;
+        z-index: 0;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR - Same as main page */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 64px;
+            width: 350px;
+            height: calc(100vh - 64px);
+            background: var(--petroleum-navy);
+            border-right: 1px solid var(--border-bright);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .main-content {
+            margin-left: 350px;
+            padding: 32px;
+            min-height: calc(100vh - 64px);
+            flex: 1;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .logo {
+    font-family: 'Saira Condensed', sans-serif;  /* CHANGED */
+    font-size: 24px;
+    font-weight: 800;  /* CHANGED */
+    letter-spacing: 2px;  /* NEW */
+    background: var(--gradient-amber);  /* CHANGED */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-controls {
+            padding: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-row select {
+            flex: 1;
+            padding: 10px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-row select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .role-count {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .roles-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .role-card {
+    background: var(--steel-gray);  /* CHANGED */
+    border: 1px solid var(--border-bright);  /* CHANGED */
+    border-left: 3px solid transparent;  /* NEW */
+    padding: 16px;
+    margin: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.role-card:hover {
+    border-left-color: var(--amber-warning);  /* NEW */
+    transform: translateX(4px);  /* NEW */
+    background: var(--deep-ocean);  /* CHANGED */
+}
+
+.role-card.active {
+    border-left-color: var(--amber-warning);  /* NEW */
+    background: var(--deep-ocean);  /* CHANGED */
+}
+
+        .role-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .role-info {
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            gap: 12px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .breadcrumb {
+            padding: 16px 32px;
+            background: var(--sidebar-bg);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-light);
+        }
+
+        .breadcrumb-current {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .top-bar {
+            padding: 24px 32px 16px 32px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: var(--sidebar-bg);
+            border-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        /* Reuse styles from main page */
+        .section {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Role stats */
+        .role-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: var(--bg);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Question cards */
+        .question-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .question-level {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .question-answer {
+            background: var(--sidebar-bg);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--success);
+            margin-top: 12px;
+        }
+
+        .answer-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .answer-text {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Duties */
+        .duties-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .duty-card {
+            background: linear-gradient(to right, rgba(14, 165, 233, 0.03), transparent);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .duty-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .duty-text {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .section-content {
+            padding: 0 20px 8px 20px;
+        }
+
+        .content-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        /* Generator modal styles */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- NAVIGATION HEADER -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <!-- Admin nav links (hidden by default, shown when admin is logged in) -->
+            <div id="adminNavLinks" style="display: none; align-items: center; gap: 24px;">
+                <div style="width: 1px; height: 24px; background: var(--border-bright);"></div>
+                <a href="/dashboard/users" class="nav-link">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link">B2B Auth</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link">Audit Log</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="container">
+        <!-- SIDEBAR (same as main page) -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">AOP v5.0</div>
+                <div class="logo-subtitle">Intelligence Platform</div>
+            </div>
+
+            <div class="sidebar-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search roles...">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="filter-row">
+                    <select id="functionFilter">
+                        <option value="">All Functions</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Finance / Commercial">Finance / Commercial</option>
+                        <option value="HSE">HSE</option>
+                        <option value="Operations / Production">Operations / Production</option>
+                        <option value="Project Management">Project Management</option>
+                        <option value="Supply Chain / Procurement">Supply Chain / Procurement</option>
+                    </select>
+                    <select id="rLevelFilter">
+                        <option value="">All R-Levels</option>
+                        <option value="R1">R1</option>
+                        <option value="R2">R2</option>
+                        <option value="R3">R3</option>
+                        <option value="R4">R4</option>
+                    </select>
+                </div>
+                <div class="filter-row" style="margin-top: 8px;">
+                    <select id="lLevelFilter">
+                        <option value="">All L-Levels</option>
+                        <option value="L1">L1</option>
+                        <option value="L2">L2</option>
+                        <option value="L3">L3</option>
+                    </select>
+                    <select id="bLevelFilter">
+                        <option value="">All B-Levels</option>
+                        <option value="B1">B1</option>
+                        <option value="B2">B2</option>
+                        <option value="B3">B3</option>
+                        <option value="B4">B4</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="role-count" id="roleCount">Loading...</div>
+
+            <div class="roles-list" id="rolesList">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="/">
+                    <i class="bi bi-house-door"></i>
+                    Dashboard
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current" id="breadcrumbRole">Loading...</span>
+            </div>
+
+            <!-- Top Bar with Tabs -->
+            <div class="top-bar">
+                <div class="page-title" id="roleTitle">Loading Role...</div>
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="jd">
+                        <i class="bi bi-file-text"></i>
+                        Job Description
+                    </button>
+                    <button class="tab-btn" data-tab="tech">
+                        <i class="bi bi-code-slash"></i>
+                        Technical Questions
+                    </button>
+                    <button class="tab-btn" data-tab="behavioral">
+                        <i class="bi bi-people"></i>
+                        Behavioral Questions
+                    </button>
+                    <button class="tab-btn" data-tab="generator">
+                        <i class="bi bi-shuffle"></i>
+                        Generator
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- JD Tab -->
+                <div id="jdContent">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Technical Questions Tab -->
+                <div id="techContent" class="hidden">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Behavioral Questions Tab -->
+                <div id="behavioralContent" class="hidden">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Generator Tab -->
+                <div id="generatorContent" class="hidden">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ROLE_ID = '{{ role_id if role_id else "" }}';
+        let allRoles = [];
+        let availableLevels = {};
+
+        // Load everything on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadRolesForSidebar();
+            
+            // Only load role details if we have a role_id
+            if (ROLE_ID) {
+                await loadRoleDetails();
+                await loadAvailableLevels();
+            } else {
+                // Show empty state when no role selected
+                document.getElementById('breadcrumbRole').textContent = 'Select a role';
+                document.getElementById('roleTitle').textContent = 'Select a role from the sidebar';
+            }
+            
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search and filters
+            document.getElementById('searchInput').addEventListener('input', filterRoles);
+            document.getElementById('functionFilter').addEventListener('change', filterRoles);
+            document.getElementById('rLevelFilter').addEventListener('change', filterRoles);
+            document.getElementById('lLevelFilter').addEventListener('change', filterRoles);
+            document.getElementById('bLevelFilter').addEventListener('change', filterRoles);
+
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+        }
+
+        async function loadRolesForSidebar() {
+            try {
+                // FIX: Add page_size parameter to get all roles (not just default 20)
+                const response = await fetch('/api/roles?page_size=500');
+                const data = await response.json();
+                // FIX: API wraps response in {success, data: {roles, count}}
+                allRoles = data.data ? data.data.roles : (data.roles || []);
+                displayRoles(allRoles);
+            } catch (error) {
+                console.error('Error loading roles:', error);
+            }
+        }
+
+        async function filterRoles() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const functionFilter = document.getElementById('functionFilter').value;
+            const rLevel = document.getElementById('rLevelFilter').value;
+            const lLevel = document.getElementById('lLevelFilter').value;
+            const bLevel = document.getElementById('bLevelFilter').value;
+
+            try {
+                const params = new URLSearchParams();
+                if (searchTerm) params.append('search', searchTerm);
+                if (functionFilter) params.append('function', functionFilter);
+                if (rLevel) params.append('r_level', rLevel);
+                if (lLevel) params.append('l_level', lLevel);
+                if (bLevel) params.append('b_level', bLevel);
+
+                // FIX: Add page_size parameter to get all roles (not just default 20)
+                params.append('page_size', '500');
+
+                const response = await fetch(`/api/roles?${params}`);
+                const data = await response.json();
+                
+                // FIX: API wraps response in {success, data: {roles, count}}
+                allRoles = data.data ? data.data.roles : (data.roles || []);
+                displayRoles(allRoles);
+            } catch (error) {
+                console.error('Error filtering roles:', error);
+            }
+        }
+
+        function displayRoles(roles) {
+            const container = document.getElementById('rolesList');
+            const roleCount = document.getElementById('roleCount');
+            
+            roleCount.textContent = `${roles.length} role${roles.length !== 1 ? 's' : ''} found`;
+
+            if (roles.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No roles found</p></div>';
+                return;
+            }
+
+            let html = '';
+            roles.forEach(role => {
+                const isActive = role.role_master_id === ROLE_ID ? 'active' : '';
+                html += `
+                    <div class="role-card ${isActive}" onclick="window.location.href='/role/${role.role_master_id}'">
+                        <div class="role-title">${role.role_title}</div>
+                        <div class="role-info">
+                            <span>${role.r_level}</span>
+                            <span>${role.l_level}</span>
+                            <span>${role.b_level}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function loadRoleDetails() {
+            try {
+                const response = await fetch(`/api/jd/${ROLE_ID}`);
+                const rawData = await response.json();
+                // FIX: Unwrap data envelope - API may wrap in {success, data: {...}}
+                const data = rawData.data || rawData;
+
+                // Update page title and breadcrumb
+                document.getElementById('roleTitle').textContent = data.role.role_title;
+                document.getElementById('breadcrumbRole').textContent = data.role.role_title;
+
+                // Load JD content
+                displayJobDescription(data);
+            } catch (error) {
+                console.error('Error loading role details:', error);
+            }
+        }
+
+        async function loadAvailableLevels() {
+            try {
+                const response = await fetch(`/api/roles/${ROLE_ID}/available-levels`);
+                const rawData = await response.json();
+                // FIX: Unwrap data envelope - API may wrap in {success, data: {...}}
+                availableLevels = rawData.data || rawData;
+            } catch (error) {
+                console.error('Error loading available levels:', error);
+            }
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+
+            // Update content visibility
+            document.getElementById('jdContent').classList.toggle('hidden', tab !== 'jd');
+            document.getElementById('techContent').classList.toggle('hidden', tab !== 'tech');
+            document.getElementById('behavioralContent').classList.toggle('hidden', tab !== 'behavioral');
+            document.getElementById('generatorContent').classList.toggle('hidden', tab !== 'generator');
+
+            // Load content if needed
+            if (tab === 'tech') loadTechnicalQuestions();
+            else if (tab === 'behavioral') loadBehavioralQuestions();
+            else if (tab === 'generator') loadGenerator();
+        }
+
+        function displayJobDescription(data) {
+            const container = document.getElementById('jdContent');
+            
+            let html = `
+                <div class="role-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Function</div>
+                        <div class="stat-value">${data.role.function}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">R-Level</div>
+                        <div class="stat-value">${data.role.r_level}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">L-Level</div>
+                        <div class="stat-value">${data.role.l_level}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">B-Level</div>
+                        <div class="stat-value">${data.role.b_level}</div>
+                    </div>
+                </div>
+            `;
+
+            if (data.sections && data.sections.length > 0) {
+                data.sections.forEach(section => {
+                    html += `
+                        <div class="section">
+                            <div class="section-header">
+                                <div class="section-title">${escapeHtml(section.section_title)}</div>
+                            </div>
+                    `;
+                    
+                    if (section.duties && section.duties.length > 0) {
+                        html += '<div class="duties-list">';
+                        section.duties.forEach(duty => {
+                            html += `
+                                <div class="duty-card">
+                                    <div class="duty-number">${escapeHtml(duty.duty_number)}</div>
+                                    <div class="duty-text">${escapeHtml(duty.duty_description)}</div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    } else if (section.full_content) {
+                        html += `
+                            <div class="section-content">
+                                <div class="content-text">${escapeHtml(section.full_content).replace(/\n/g, '<br>')}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                });
+            } else {
+                html += `
+                    <div class="empty-state">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <h3>No job description content available</h3>
+                        <p>This role currently does not have detailed job description sections.</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        async function loadTechnicalQuestions() {
+            const container = document.getElementById('techContent');
+            container.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                const response = await fetch(`/api/questions/${ROLE_ID}`);
+                const rawData = await response.json();
+                // FIX: Unwrap data envelope - API may wrap in {success, data: {...}}
+                const data = rawData.data || rawData;
+
+                // Flatten the grouped questions
+                let allQuestions = [];
+                ['L1', 'L2', 'L3'].forEach(level => {
+                    if (data.technical_questions && data.technical_questions[level]) {
+                        allQuestions = allQuestions.concat(data.technical_questions[level]);
+                    }
+                });
+
+                if (allQuestions.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="bi bi-question-circle"></i><h3>No technical questions available</h3></div>';
+                    return;
+                }
+
+                let html = '';
+                allQuestions.forEach(q => {
+                    html += `
+                        <div class="question-card">
+                            <div class="question-header">
+                                <span class="question-level">${escapeHtml(q.level)}</span>
+                            </div>
+                            <div class="question-text">${escapeHtml(q.text)}</div>
+                            ${q.model_answer ? `
+                                <div class="question-answer">
+                                    <div class="answer-label">Model Answer</div>
+                                    <div class="answer-text">${escapeHtml(q.model_answer)}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading technical questions:', error);
+                container.innerHTML = '<div class="empty-state"><p>Error loading questions</p></div>';
+            }
+        }
+
+        async function loadBehavioralQuestions() {
+            const container = document.getElementById('behavioralContent');
+            container.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                const response = await fetch(`/api/questions/${ROLE_ID}`);
+                const rawData = await response.json();
+                // FIX: Unwrap data envelope - API may wrap in {success, data: {...}}
+                const data = rawData.data || rawData;
+
+                // Flatten the grouped questions
+                let allQuestions = [];
+                ['B1', 'B2', 'B3', 'B4'].forEach(level => {
+                    if (data.behavioral_questions && data.behavioral_questions[level]) {
+                        allQuestions = allQuestions.concat(data.behavioral_questions[level]);
+                    }
+                });
+
+                if (allQuestions.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="bi bi-people"></i><h3>No behavioral questions available</h3><p>Behavioral questions will be added soon.</p></div>';
+                    return;
+                }
+
+                let html = '';
+                allQuestions.forEach(q => {
+                    html += `
+                        <div class="question-card">
+                            <div class="question-header">
+                                <span class="question-level">${escapeHtml(q.level)}</span>
+                            </div>
+                            <div class="question-text">${escapeHtml(q.text)}</div>
+                            ${q.model_answer ? `
+                                <div class="question-answer">
+                                    <div class="answer-label">Model Answer</div>
+                                    <div class="answer-text">${escapeHtml(q.model_answer)}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading behavioral questions:', error);
+                container.innerHTML = '<div class="empty-state"><p>Error loading questions</p></div>';
+            }
+        }
+
+        function loadGenerator() {
+            const container = document.getElementById('generatorContent');
+            
+            let html = '<div class="section"><div class="section-header"><div class="section-title">Question Generator</div></div>';
+            
+            html += '<p style="margin-bottom: 20px; color: var(--text-light);">Select question levels to generate a random interview script.</p>';
+            
+            // Technical questions
+            if (availableLevels.available_tech_levels && availableLevels.available_tech_levels.length > 0) {
+                html += '<h3 style="margin-bottom: 12px;">Technical Questions:</h3>';
+                html += '<div style="display: flex; gap: 16px; margin-bottom: 20px;">';
+                availableLevels.available_tech_levels.forEach(level => {
+                    html += `
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="tech_${level}" value="${level}">
+                            <span>${level}</span>
+                        </label>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += '<p style="color: var(--text-light); margin-bottom: 20px;">No technical questions available for this role.</p>';
+            }
+
+            // Behavioral questions
+            if (availableLevels.available_beh_levels && availableLevels.available_beh_levels.length > 0) {
+                html += '<h3 style="margin-bottom: 12px;">Behavioral Questions:</h3>';
+                html += '<div style="display: flex; gap: 16px; margin-bottom: 20px;">';
+                availableLevels.available_beh_levels.forEach(level => {
+                    html += `
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="beh_${level}" value="${level}">
+                            <span>${level}</span>
+                        </label>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += '<p style="color: var(--text-light); margin-bottom: 20px;">No behavioral questions available yet.</p>';
+            }
+
+            html += '<button class="btn btn-primary" onclick="generateScript()"><i class="bi bi-shuffle"></i> Generate Script</button>';
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function generateScript() {
+            // Collect selected levels
+            const l1_count = document.getElementById('tech_L1')?.checked ? 2 : 0;
+            const l2_count = document.getElementById('tech_L2')?.checked ? 2 : 0;
+            const l3_count = document.getElementById('tech_L3')?.checked ? 2 : 0;
+            
+            const total = l1_count + l2_count + l3_count;
+            
+            if (total === 0) {
+                alert('Please select at least one question level');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/generate-script', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        role_id: ROLE_ID,
+                        l1_count: l1_count,
+                        l2_count: l2_count,
+                        l3_count: l3_count
+                    })
+                });
+                
+                if (response.ok) {
+                    const rawData = await response.json();
+                // FIX: Unwrap data envelope - API may wrap in {success, data: {...}}
+                    const data = rawData.data || rawData;
+                    displayGeneratedScript(data);
+                } else {
+                    const error = await response.json();
+                    alert('Failed to generate script: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Script generation error:', error);
+                alert('Error generating script: ' + error.message);
+            }
+        }
+        
+        function displayGeneratedScript(data) {
+            const container = document.getElementById('generatorContent');
+            
+            let html = `
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Generated Interview Script</div>
+                        <button class="btn btn-primary" onclick="loadGenerator()">
+                            <i class="bi bi-arrow-left"></i> Back to Generator
+                        </button>
+                    </div>
+                    <p style="margin-bottom: 20px; color: var(--text-light);">
+                        Generated ${data.total_questions} questions for ${data.role_id}
+                    </p>
+            `;
+            
+            data.questions.forEach((q, index) => {
+                html += `
+                    <div class="question-card">
+                        <div class="question-header">
+                            <span class="question-level">${escapeHtml(q.level)}</span>
+                            <span style="color: var(--text-secondary);">Question ${index + 1}</span>
+                        </div>
+                        <div class="question-text">${escapeHtml(q.text)}</div>
+                        ${q.model_answer ? `
+                            <div class="question-answer">
+                                <div class="answer-label">Model Answer</div>
+                                <div class="answer-text">${escapeHtml(q.model_answer)}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function initTheme() {
+    const savedTheme = localStorage.getItem('aop-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+    updateActiveNav();
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('aop-theme', newTheme);
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+    }
+}
+
+function updateActiveNav() {
+    const path = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === path || (href === '/roles' && path.startsWith('/role/'))) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Check admin status to show Admin Panel link
+async function checkAdminStatus() {
+    try {
+        const response = await fetch('/api/admin/me');
+        if (response.ok) {
+            document.getElementById('adminNavLinks').style.display = 'flex';
+        }
+    } catch (error) {
+        // Not an admin or not logged in
+    }
+}
+
+// Initialize theme on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        checkAdminStatus();
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+    });
+} else {
+    initTheme();
+    checkAdminStatus();
+    document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+}
+    </script>
+</body>
+</html>
+

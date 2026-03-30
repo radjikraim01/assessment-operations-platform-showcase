@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Operations Platform - Command Center</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Dark Mode - Industrial Petroleum Palette (Default) */
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            
+            /* Gradients */
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            --gradient-overlay: linear-gradient(180deg, rgba(10,22,40,0) 0%, rgba(10,22,40,0.8) 100%);
+        }
+
+        /* Light Mode - Clean Industrial Palette */
+        [data-theme="light"] {
+            --petroleum-navy: #f8fafc;
+            --deep-ocean: #ffffff;
+            --steel-gray: #f1f5f9;
+            --amber-warning: #ea580c;
+            --copper-accent: #dc2626;
+            --safety-green: #059669;
+            --danger-red: #dc2626;
+            --technical-cyan: #0891b2;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --border-subtle: #e2e8f0;
+            --border-bright: #cbd5e1;
+            
+            /* Light mode gradients */
+            --gradient-petroleum: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            --gradient-amber: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+            --gradient-overlay: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
+        }
+
+        /* Override scan line in light mode */
+        [data-theme="light"] body::after {
+            background: linear-gradient(90deg, transparent 0%, rgba(234,88,12,0.3) 50%, transparent 100%);
+        }
+
+        /* Override grid pattern in light mode */
+        [data-theme="light"] body::before {
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(148,163,184,0.05) 0px, transparent 1px, transparent 40px),
+                repeating-linear-gradient(0deg, rgba(148,163,184,0.05) 0px, transparent 1px, transparent 40px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--petroleum-navy);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Hexagonal Grid Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(100,116,139,0.03) 0px, transparent 1px, transparent 40px),
+                repeating-linear-gradient(0deg, rgba(100,116,139,0.03) 0px, transparent 1px, transparent 40px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Subtle scan line effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--amber-warning) 50%, transparent 100%);
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* ===== TOP NAVIGATION ===== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .nav-theme-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-bright);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .nav-theme-toggle:hover {
+            border-color: var(--amber-warning);
+            transform: rotate(45deg);
+        }
+
+        .nav-theme-toggle i {
+            font-size: 20px;
+            color: var(--amber-warning);
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 104px 32px 40px 32px; /* Increased top padding for nav */
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            margin-bottom: 48px;
+            border-bottom: 2px solid var(--border-bright);
+            padding-bottom: 32px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--safety-green);
+            padding: 12px 20px;
+            border-radius: 4px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--safety-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--safety-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--deep-ocean);
+            border: 2px solid var(--border-bright);
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-amber);
+        }
+
+        .stat-card:hover {
+            border-color: var(--amber-warning);
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            color: var(--amber-warning);
+            margin-bottom: 16px;
+        }
+
+        .stat-value {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* ===== SECTION STYLES ===== */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .section-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--amber-warning);
+        }
+
+        .section-badge {
+            background: var(--amber-warning);
+            color: var(--petroleum-navy);
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .action-btn {
+            background: var(--deep-ocean);
+            border: 2px solid var(--border-bright);
+            padding: 28px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .action-btn:hover {
+            border-color: var(--technical-cyan);
+            transform: translateY(-4px);
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .action-icon {
+            font-size: 28px;
+            color: var(--technical-cyan);
+        }
+
+        .action-arrow {
+            font-size: 20px;
+            color: var(--text-tertiary);
+            transition: transform 0.3s;
+        }
+
+        .action-btn:hover .action-arrow {
+            transform: translateX(8px);
+            color: var(--technical-cyan);
+        }
+
+        .action-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ===== REQUESTS LIST ===== */
+        .requests-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .request-card {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: 200px 1fr 120px;
+            gap: 24px;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .request-card:hover {
+            border-color: var(--amber-warning);
+        }
+
+        .request-agent {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .agent-id {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .agent-type {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .request-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .request-purpose {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .request-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .request-status {
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--amber-warning);
+            border: 1px solid var(--amber-warning);
+        }
+
+        .status-badge.approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--safety-green);
+            border: 1px solid var(--safety-green);
+        }
+
+        .status-badge.denied {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--safety-green);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 40px;
+            color: var(--text-tertiary);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-bright);
+            border-top-color: var(--amber-warning);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 16px 20px;
+            border-radius: 4px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast.success .toast-icon { color: var(--safety-green); }
+        .toast.error .toast-icon { color: var(--danger-red); }
+        .toast.warning .toast-icon { color: var(--amber-warning); }
+        .toast.info .toast-icon { color: var(--technical-cyan); }
+
+        .toast-message {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 84px 16px 24px 16px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            .request-card {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .request-status {
+                text-align: left;
+            }
+            .header-top {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <!-- Admin nav links (hidden by default, shown when admin is logged in) -->
+            <div id="adminNavLinks" style="display: none; align-items: center; gap: 24px;">
+                <div class="nav-divider" style="width: 1px; height: 24px; background: var(--border-bright);"></div>
+                <a href="/dashboard/users" class="nav-link">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link">B2B Auth</a>
+                <a href="/dashboard/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link">Audit Log</a>
+            </div>
+            <button class="nav-theme-toggle" id="themeToggle" title="Toggle theme">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-top">
+                <div class="logo-section">
+                    <h1 class="logo">Command Center</h1>
+                    <p class="logo-subtitle">Assessment Operations Platform v4.3</p>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">System Online</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- STATS GRID -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <i class="bi bi-briefcase stat-icon"></i>
+                <div class="stat-value" id="stat-roles">---</div>
+                <div class="stat-label">Active Roles</div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-question-circle stat-icon"></i>
+                <div class="stat-value" id="stat-questions">7,600+</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-file-earmark-text stat-icon"></i>
+                <div class="stat-value" id="stat-jds">481</div>
+                <div class="stat-label">Job Descriptions</div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-clock-history stat-icon"></i>
+                <div class="stat-value" id="stat-pending">---</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-lightning-charge"></i>
+                    Quick Actions
+                </h2>
+            </div>
+            <div class="actions-grid">
+                <a href="/roles" class="action-btn">
+                    <div class="action-header">
+                        <i class="bi bi-search action-icon"></i>
+                        <i class="bi bi-arrow-right action-arrow"></i>
+                    </div>
+                    <div class="action-title">Browse Roles</div>
+                    <div class="action-desc">Search and explore the complete role catalog with filtering by function, level, and domain</div>
+                </a>
+
+                <a href="/dashboard/access-requests" class="action-btn">
+                    <div class="action-header">
+                        <i class="bi bi-shield-check action-icon"></i>
+                        <i class="bi bi-arrow-right action-arrow"></i>
+                    </div>
+                    <div class="action-title">Access Requests</div>
+                    <div class="action-desc">Review and manage agent access requests for question data and interview content</div>
+                </a>
+
+                <a href="#" class="action-btn" onclick="alert('Analytics coming soon!'); return false;">
+                    <div class="action-header">
+                        <i class="bi bi-bar-chart action-icon"></i>
+                        <i class="bi bi-arrow-right action-arrow"></i>
+                    </div>
+                    <div class="action-title">Analytics</div>
+                    <div class="action-desc">View system metrics, usage patterns, and quality scores</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- RECENT ACCESS REQUESTS -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-clock-history"></i>
+                    Recent Access Requests
+                </h2>
+                <span class="section-badge" id="pending-count">Loading...</span>
+            </div>
+            <div class="requests-grid" id="requests-list">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <span>Loading requests...</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ===== CACHED DATA TO AVOID DUPLICATE API CALLS =====
+        let cachedPendingRequests = null;
+
+        // ===== API CALLS WITH ERROR HANDLING =====
+        async function loadDashboardData() {
+            /**
+             * FIXED: Single function that loads all dashboard data
+             * This replaces the previous dual-call approach where both
+             * loadDashboardStats() and loadRecentRequests() called
+             * /api/dashboard/access-requests?status=PENDING separately
+             */
+            try {
+                // Load roles count
+                // FIX: Add page_size parameter to get all roles (not just default 20)
+                const rolesRes = await fetch('/api/roles?page_size=500');
+                
+                // Check if response is JSON
+                const contentType = rolesRes.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.warn('Backend not running - using fallback data');
+                    useFallbackData();
+                    return;
+                }
+                
+                const rolesData = await rolesRes.json();
+                // FIX: API wraps response in {success, data: {roles, count}, pagination}
+                const rolesCount = rolesData.pagination ? rolesData.pagination.total_count : 
+                                   (rolesData.data ? rolesData.data.count : rolesData.count);
+                document.getElementById('stat-roles').textContent = rolesCount || '-';
+
+                // Load pending requests - SINGLE CALL, used for both stat and list
+                const pendingRes = await fetch('/api/dashboard/access-requests?status=PENDING');
+                const pendingData = await pendingRes.json();
+                
+                // Cache the data
+                cachedPendingRequests = pendingData;
+                
+                // Update the stat card
+                document.getElementById('stat-pending').textContent = pendingData.count;
+                
+                // Render the requests list using cached data
+                renderRecentRequests(pendingData);
+
+            } catch (error) {
+                console.warn('API error - using fallback data:', error.message);
+                useFallbackData();
+            }
+        }
+
+        function useFallbackData() {
+            // Use hardcoded values when backend isn't available
+                document.getElementById('stat-roles').textContent = rolesCount || '-';
+            document.getElementById('stat-questions').textContent = '7,600+';
+            document.getElementById('stat-pending').textContent = '0';
+            document.getElementById('stat-jds').textContent = '481';
+            showEmptyRequests();
+        }
+
+        async function refreshPendingRequests() {
+            /**
+             * Called by setInterval to refresh the requests list
+             * Makes a single API call and updates both the stat and the list
+             */
+            try {
+                const res = await fetch('/api/dashboard/access-requests?status=PENDING');
+                
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    return; // Silently fail on interval refresh
+                }
+                
+                const data = await res.json();
+                cachedPendingRequests = data;
+                
+                // Update stat
+                document.getElementById('stat-pending').textContent = data.count;
+                
+                // Update list
+                renderRecentRequests(data);
+
+            } catch (error) {
+                console.warn('Error refreshing requests:', error.message);
+            }
+        }
+
+        function renderRecentRequests(data) {
+            /**
+             * Renders the requests list from provided data
+             * No API call - just renders what's passed in
+             */
+            const container = document.getElementById('requests-list');
+            const badge = document.getElementById('pending-count');
+
+            badge.textContent = `${data.count} Pending`;
+
+            if (data.count === 0) {
+                showEmptyRequests();
+                return;
+            }
+
+            // Show first 5 requests
+            const requests = data.requests.slice(0, 5);
+            container.innerHTML = requests.map(req => {
+                const timeAgo = formatTimeAgo(req.requested_at);
+                return `
+                    <div class="request-card">
+                        <div class="request-agent">
+                            <div class="agent-id">${escapeHtml(req.agent_id)}</div>
+                            <div class="agent-type">${escapeHtml(req.request_type)}</div>
+                        </div>
+                        <div class="request-details">
+                            <div class="request-purpose">${escapeHtml(req.purpose)}</div>
+                            <div class="request-time">
+                                <i class="bi bi-clock"></i>
+                                ${timeAgo}
+                            </div>
+                        </div>
+                        <div class="request-status">
+                            <span class="status-badge ${req.status.toLowerCase()}">${req.status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showEmptyRequests() {
+            const container = document.getElementById('requests-list');
+            const badge = document.getElementById('pending-count');
+            
+            badge.textContent = '0 Pending';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-check2-circle"></i>
+                    <p>No pending access requests.<br>All agent requests have been reviewed.</p>
+                </div>
+            `;
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatTimeAgo(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            return `${Math.floor(seconds / 86400)}d ago`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle-fill',
+                error: 'x-circle-fill',
+                warning: 'exclamation-triangle-fill',
+                info: 'info-circle-fill'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="bi bi-${icons[type]} toast-icon"></i>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // ===== THEME TOGGLE =====
+        function initTheme() {
+            const savedTheme = localStorage.getItem('aop-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('aop-theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.className = 'bi bi-moon-stars';
+            } else {
+                icon.className = 'bi bi-sun';
+            }
+        }
+
+        // ===== CHECK ADMIN STATUS =====
+        async function checkAdminStatus() {
+            try {
+                const response = await fetch('/api/admin/me');
+                if (response.ok) {
+                    // User is logged in as admin - show admin navigation
+                    document.getElementById('adminNavLinks').style.display = 'flex';
+                }
+            } catch (error) {
+                // Not an admin or not logged in - hide the links (already hidden by default)
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme first
+            initTheme();
+
+            // Setup theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Check if user is admin to show Admin Panel link
+            checkAdminStatus();
+
+            // Load all dashboard data with SINGLE API call for pending requests
+            loadDashboardData();
+
+            // Refresh requests every 30 seconds (single API call per refresh)
+            setInterval(refreshPendingRequests, 30000);
+        });
+    </script>
+</body>
+</html>
+

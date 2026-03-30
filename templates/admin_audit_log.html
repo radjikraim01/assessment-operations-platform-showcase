@@ -1,0 +1,977 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log - Assessment Operations Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--petroleum-navy);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            row-gap: 8px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-bright);
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .btn-primary {
+            background: var(--gradient-amber);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-bright);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 24px;
+            border-left: 4px solid var(--amber-warning);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--amber-warning);
+        }
+
+        /* Filters */
+        .filters {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 12px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--amber-warning);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin-bottom: 32px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1100px;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--steel-gray);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-bright);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        tr:hover {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-admin {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--technical-cyan);
+            border: 1px solid var(--technical-cyan);
+        }
+
+        .badge-user {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--safety-green);
+            border: 1px solid var(--safety-green);
+        }
+
+        .badge-anonymous {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        /* Code blocks */
+        code {
+            background: var(--petroleum-navy);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .details-btn {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--amber-warning);
+            padding: 6px 12px;
+            border: 1px solid var(--amber-warning);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .details-btn:hover {
+            background: var(--amber-warning);
+            color: var(--petroleum-navy);
+        }
+
+        .details-row {
+            display: none;
+            background: var(--petroleum-navy);
+        }
+
+        .details-content {
+            padding: 16px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-bright);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--amber-warning);
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading/Empty States */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 3px solid var(--border-bright);
+            border-top: 3px solid var(--amber-warning);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--deep-ocean);
+            border: 2px solid var(--border-bright);
+            padding: 32px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Filter Modal Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--amber-warning);
+        }
+
+        /* Modal Actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                padding-top: 120px;
+            }
+
+            .top-nav {
+                height: auto;
+                min-height: 64px;
+                padding: 10px 16px;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav-left,
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding-top: 160px;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            .page-title {
+                font-size: 28px;
+                letter-spacing: 1px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pagination {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <div class="nav-divider"></div>
+                <a href="/dashboard/users" class="nav-link">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link">B2B Authorizations</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link active">Audit Log</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="/dashboard/profile" class="nav-link">Profile</a>
+            <div class="nav-divider"></div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Audit Log</h1>
+            <button class="btn btn-primary" onclick="exportLogs()">
+                <i class="bi bi-download"></i> Export to CSV
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="stats">
+            <!-- Stats will be inserted here -->
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="filterUser">User Email</label>
+                    <input type="text" id="filterUser" placeholder="Search by email...">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterAction">Action</label>
+                    <select id="filterAction">
+                        <option value="">All Actions</option>
+                        <option value="login">Login</option>
+                        <option value="logout">Logout</option>
+                        <option value="failed_login">Failed Login</option>
+                        <option value="view_dashboard">View Dashboard</option>
+                        <option value="view_roles">View Roles</option>
+                        <option value="view_role_detail">View Role Detail</option>
+                        <option value="view_jd">View JD</option>
+                        <option value="view_questions">View Questions</option>
+                        <option value="generate_questions">Generate Questions</option>
+                        <option value="create_user">Create User</option>
+                        <option value="update_user_permissions">Update Permissions</option>
+                        <option value="delete_user">Delete User</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterStartDate">Start Date</label>
+                    <input type="date" id="filterStartDate">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterEndDate">End Date</label>
+                    <input type="date" id="filterEndDate">
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="bi bi-funnel"></i> Apply Filters
+                </button>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="bi bi-arrow-clockwise"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            Loading audit logs...
+        </div>
+
+        <!-- Logs Table -->
+        <div id="logsTable" class="table-container" style="display: none;">
+            <!-- Logs table will be inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="bi bi-inbox" style="font-size: 64px; margin-bottom: 16px;"></i>
+            <h3>No Audit Logs Found</h3>
+            <p>Try adjusting your filters</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination" style="display: none;">
+            <!-- Pagination will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Logout (POST method required)
+        async function logout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/admin/login';
+            }
+        }
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilters = {};
+
+        // Load logs on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLogs();
+        });
+
+        async function loadLogs(page = 1) {
+            currentPage = page;
+
+            try {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('logsTable').style.display = 'none';
+                document.getElementById('pagination').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'none';
+
+                // Build query string
+                const params = new URLSearchParams({
+                    page: page,
+                    page_size: 50,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`/api/admin/audit-log?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderLogs(data.logs);
+                    renderPagination(data.pagination);
+                    renderStats(data.pagination.total);
+                } else {
+                    showError('Failed to load audit logs');
+                }
+            } catch (error) {
+                showError('Error loading audit logs: ' + error.message);
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        function renderLogs(logs) {
+            const container = document.getElementById('logsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (logs.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'block';
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Action</th>
+                            <th>Resource</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${logs.map(log => `
+                            <tr>
+                                <td>${formatTimestamp(log.created_at)}</td>
+                                <td>
+                                    <div><code>${log.user_email}</code></div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-${log.user_type}">
+                                        ${log.user_type}
+                                    </span>
+                                </td>
+                                <td><code>${log.action}</code></td>
+                                <td>
+                                    ${log.resource_type ? `
+                                        <div><small>${log.resource_type}</small></div>
+                                        <div><code>${log.resource_id || '-'}</code></div>
+                                    ` : '-'}
+                                </td>
+                                <td><code>${log.ip_address || '-'}</code></td>
+                                <td>
+                                    ${log.details ? `
+                                        <button class="details-btn" onclick="toggleDetails(${log.log_id})">
+                                            Show Details
+                                        </button>
+                                    ` : '-'}
+                                </td>
+                            </tr>
+                            ${log.details ? `
+                                <tr id="details-${log.log_id}" class="details-row">
+                                    <td colspan="7">
+                                        <div class="details-content">${JSON.stringify(log.details, null, 2)}</div>
+                                    </td>
+                                </tr>
+                            ` : ''}
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+
+            if (pagination.total === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+            totalPages = pagination.total_pages;
+
+            const start = (pagination.page - 1) * pagination.page_size + 1;
+            const end = Math.min(pagination.page * pagination.page_size, pagination.total);
+
+            const html = `
+                <div class="pagination-info">
+                    Showing ${start}-${end} of ${pagination.total} logs
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" onclick="loadLogs(1)" ${pagination.page === 1 ? 'disabled' : ''}>
+                        <i class="bi bi-chevron-bar-left"></i> First
+                    </button>
+                    <button class="page-btn" onclick="loadLogs(${pagination.page - 1})" ${pagination.page === 1 ? 'disabled' : ''}>
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </button>
+                    <span style="padding: 0 15px; color: var(--text-secondary);">
+                        Page ${pagination.page} of ${pagination.total_pages}
+                    </span>
+                    <button class="page-btn" onclick="loadLogs(${pagination.page + 1})" ${pagination.page === pagination.total_pages ? 'disabled' : ''}>
+                        Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                    <button class="page-btn" onclick="loadLogs(${pagination.total_pages})" ${pagination.page === pagination.total_pages ? 'disabled' : ''}>
+                        Last <i class="bi bi-chevron-bar-right"></i>
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderStats(total) {
+            const container = document.getElementById('stats');
+
+            // Simple stats for now
+            const html = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Logs</div>
+                    <div class="stat-value">${total.toLocaleString()}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Retention Policy</div>
+                    <div class="stat-value">90 Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Current Page</div>
+                    <div class="stat-value">${currentPage}</div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function toggleDetails(logId) {
+            const row = document.getElementById(`details-${logId}`);
+            const btn = event.target.closest('.details-btn');
+
+            if (row.style.display === 'table-row') {
+                row.style.display = 'none';
+                btn.textContent = 'Show Details';
+            } else {
+                row.style.display = 'table-row';
+                btn.textContent = 'Hide Details';
+            }
+        }
+
+        function applyFilters() {
+            currentFilters = {};
+
+            const userEmail = document.getElementById('filterUser').value.trim();
+            if (userEmail) currentFilters.user_email = userEmail;
+
+            const action = document.getElementById('filterAction').value;
+            if (action) currentFilters.action = action;
+
+            const startDate = document.getElementById('filterStartDate').value;
+            if (startDate) currentFilters.start_date = startDate + 'T00:00:00';
+
+            const endDate = document.getElementById('filterEndDate').value;
+            if (endDate) currentFilters.end_date = endDate + 'T23:59:59';
+
+            loadLogs(1);  // Reset to page 1 when filtering
+        }
+
+        function clearFilters() {
+            document.getElementById('filterUser').value = '';
+            document.getElementById('filterAction').value = '';
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            currentFilters = {};
+            loadLogs(1);
+        }
+
+        async function exportLogs() {
+            try {
+                // Build query string with current filters
+                const params = new URLSearchParams(currentFilters);
+
+                // Download CSV
+                window.location.href = `/api/admin/audit-log/export?${params}`;
+            } catch (error) {
+                alert('Failed to export logs: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>
+

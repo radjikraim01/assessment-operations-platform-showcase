@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal Test Page</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #0a1628; color: white; }
+        .btn { padding: 10px 20px; margin: 10px; background: #f59e0b; border: none; color: white; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #132032; padding: 30px; border: 2px solid #475569; width: 400px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #0a1628; border: 1px solid #475569; color: white; }
+        .info { background: #132032; padding: 15px; margin: 20px 0; border-left: 4px solid #f59e0b; }
+        .success { color: #10b981; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <h1>Modal & API Test Page</h1>
+
+    <div class="info">
+        <strong>Status:</strong> <span id="status">Checking...</span><br>
+        <strong>API Response:</strong> <span id="apiStatus">Testing...</span>
+    </div>
+
+    <button class="btn" onclick="testModal()">Test Modal (Should Open)</button>
+    <button class="btn" onclick="testAPI()">Test User API</button>
+    <button class="btn" onclick="testEditUser()">Test Edit User API</button>
+
+    <div id="results" style="margin-top: 20px;"></div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <h2>Test Modal</h2>
+            <p>If you can see this, modals work!</p>
+            <input type="text" placeholder="Test input field">
+            <button class="btn" onclick="closeTestModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Test basic JavaScript
+        document.getElementById('status').textContent = 'JavaScript is working!';
+        document.getElementById('status').className = 'success';
+
+        function testModal() {
+            document.getElementById('testModal').classList.add('active');
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.remove('active');
+        }
+
+        async function testAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing /api/admin/users...</p>';
+
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+
+                results.innerHTML = `
+                    <div class="info">
+                        <strong>API Status:</strong> ${response.status}<br>
+                        <strong>Success:</strong> ${data.success}<br>
+                        <strong>Users Count:</strong> ${data.users ? data.users.length : 0}<br>
+                        <strong>First User:</strong> ${data.users && data.users[0] ? data.users[0].email : 'None'}<br>
+                        <pre>${JSON.stringify(data, null, 2).substring(0, 500)}</pre>
+                    </div>
+                `;
+
+                document.getElementById('apiStatus').textContent = 'API Working!';
+                document.getElementById('apiStatus').className = 'success';
+            } catch (error) {
+                results.innerHTML = `<div class="info"><span class="error">Error: ${error.message}</span></div>`;
+                document.getElementById('apiStatus').textContent = 'API Failed!';
+                document.getElementById('apiStatus').className = 'error';
+            }
+        }
+
+        async function testEditUser() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing edit user functionality...</p>';
+
+            try {
+                // First get a user
+                const usersResp = await fetch('/api/admin/users');
+                const usersData = await usersResp.json();
+
+                if (!usersData.users || usersData.users.length === 0) {
+                    results.innerHTML = '<div class="info"><span class="error">No users found to test with</span></div>';
+                    return;
+                }
+
+                const testUser = usersData.users[0];
+                const userId = testUser.user_id;
+
+                // Try to update email (change it slightly then change back)
+                const testEmail = testUser.email + '.test';
+
+                const editResp = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: testEmail,
+                        full_name: testUser.full_name
+                    })
+                });
+
+                const editData = await editResp.json();
+
+                // Change it back
+                await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: testUser.email,
+                        full_name: testUser.full_name
+                    })
+                });
+
+                results.innerHTML = `
+                    <div class="info">
+                        <strong>Edit User Test:</strong> ${editResp.status === 200 ? '<span class="success">PASSED</span>' : '<span class="error">FAILED</span>'}<br>
+                        <strong>Response:</strong><br>
+                        <pre>${JSON.stringify(editData, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="info"><span class="error">Error: ${error.message}</span></div>`;
+            }
+        }
+
+        // Auto-test on load
+        testAPI();
+    </script>
+</body>
+</html>

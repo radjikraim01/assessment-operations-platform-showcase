@@ -1,0 +1,1131 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Assessment Operations Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --petroleum-navy: #0a1628;
+            --deep-ocean: #132032;
+            --steel-gray: #1f2937;
+            --amber-warning: #f59e0b;
+            --copper-accent: #ea580c;
+            --safety-green: #10b981;
+            --danger-red: #dc2626;
+            --technical-cyan: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-subtle: #334155;
+            --border-bright: #475569;
+            --gradient-petroleum: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+            --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--petroleum-navy);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--deep-ocean);
+            border-bottom: 1px solid var(--border-bright);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-logo {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--gradient-amber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            row-gap: 8px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--amber-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-bright);
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-family: 'Saira Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .btn-primary {
+            background: var(--gradient-amber);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-bright);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid var(--danger-red);
+            color: var(--danger-red);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--safety-green);
+            color: var(--safety-green);
+        }
+
+        .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--danger-red);
+            color: var(--danger-red);
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--deep-ocean);
+            border: 1px solid var(--border-bright);
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--steel-gray);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-bright);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--safety-green);
+            border: 1px solid var(--safety-green);
+        }
+
+        .badge-inactive {
+            background: rgba(220, 38, 38, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
+
+        /* Permission Grid */
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .permission-enabled {
+            color: var(--safety-green);
+        }
+
+        .permission-disabled {
+            color: var(--text-tertiary);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--deep-ocean);
+            border: 2px solid var(--border-bright);
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background: var(--petroleum-navy);
+            border: 1px solid var(--border-bright);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--amber-warning);
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 14px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .checkbox-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-left: 30px;
+            margin-top: -8px;
+        }
+
+        /* Loading/Empty States */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 3px solid var(--border-bright);
+            border-top: 3px solid var(--amber-warning);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                padding-top: 120px;
+            }
+
+            .top-nav {
+                height: auto;
+                min-height: 64px;
+                padding: 10px 16px;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .nav-left,
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 160px;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            .page-title {
+                font-size: 28px;
+                letter-spacing: 1px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">AOP</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="/roles" class="nav-link">Roles</a>
+                <div class="nav-divider"></div>
+                <a href="/dashboard/users" class="nav-link active">Users</a>
+                <a href="/dashboard/b2b-authorizations" class="nav-link">B2B Authorizations</a>
+                <a href="/dashboard/access-requests" class="nav-link">Access Requests</a>
+                <a href="/dashboard/audit-log" class="nav-link">Audit Log</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="/dashboard/profile" class="nav-link">Profile</a>
+            <div class="nav-divider"></div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">User Management</h1>
+            <button class="btn btn-primary" onclick="openCreateUserModal()">
+                <i class="bi bi-plus-lg"></i> Create New User
+            </button>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            Loading users...
+        </div>
+
+        <!-- Users Table -->
+        <div id="usersTable" class="table-container" style="display: none;">
+            <!-- Users table will be inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="bi bi-people" style="font-size: 64px; margin-bottom: 16px;"></i>
+            <h3>No Users Yet</h3>
+            <p>Click "Create New User" to add your first user</p>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New User</h2>
+                <button class="close-btn" onclick="closeCreateUserModal()">&times;</button>
+            </div>
+
+            <form id="createUserForm" onsubmit="createUser(event)">
+                <div class="form-group">
+                    <label for="newEmail">Email Address *</label>
+                    <input type="email" id="newEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Password *</label>
+                    <input type="password" id="newPassword" required minlength="8">
+                    <small style="color: var(--text-tertiary); font-size: 12px;">Minimum 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="newFullName">Full Name *</label>
+                    <input type="text" id="newFullName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Permissions</label>
+                    <div class="checkbox-group">
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="newCanViewRoles" checked>
+                                <label for="newCanViewRoles">Can View Roles</label>
+                            </div>
+                            <div class="checkbox-description">User can browse and view role details</div>
+                        </div>
+
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="newCanViewJds" checked>
+                                <label for="newCanViewJds">Can View Job Descriptions</label>
+                            </div>
+                            <div class="checkbox-description">User can view full job descriptions</div>
+                        </div>
+
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="newCanGenerateQuestions">
+                                <label for="newCanGenerateQuestions">Can Generate Questions</label>
+                            </div>
+                            <div class="checkbox-description">User can generate interview question scripts</div>
+                        </div>
+
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="newCanViewAnalytics">
+                                <label for="newCanViewAnalytics">Can View Analytics</label>
+                            </div>
+                            <div class="checkbox-description">User can access analytics dashboard</div>
+                        </div>
+
+                        <div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="newCanExportData">
+                                <label for="newCanExportData">Can Export Data</label>
+                            </div>
+                            <div class="checkbox-description">User can export data to CSV/Excel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit User Details</h2>
+                <button class="close-btn" onclick="closeEditUserModal()">&times;</button>
+            </div>
+
+            <form id="editUserForm" onsubmit="updateUser(event)">
+                <input type="hidden" id="editUserIdMain">
+
+                <div class="form-group">
+                    <label for="editUserEmailInput">Email Address *</label>
+                    <input type="email" id="editUserEmailInput" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editUserFullName">Full Name *</label>
+                    <input type="text" id="editUserFullName" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reset Password</h2>
+                <button class="close-btn" onclick="closeResetPasswordModal()">&times;</button>
+            </div>
+
+            <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                User: <strong id="resetPasswordUserEmail" style="color: var(--text-primary);"></strong>
+            </p>
+
+            <form id="resetPasswordForm" onsubmit="resetPassword(event)">
+                <input type="hidden" id="resetPasswordUserId">
+
+                <div class="form-group">
+                    <label for="newPasswordForUser">New Password *</label>
+                    <input type="password" id="newPasswordForUser" required minlength="8">
+                    <small style="color: var(--text-tertiary); font-size: 12px;">Minimum 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPasswordForUser">Confirm New Password *</label>
+                    <input type="password" id="confirmPasswordForUser" required minlength="8">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeResetPasswordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Permissions Modal -->
+    <div id="editPermissionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Permissions</h2>
+                <button class="close-btn" onclick="closeEditPermissionsModal()">&times;</button>
+            </div>
+
+            <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                User: <strong id="editUserEmail" style="color: var(--text-primary);"></strong>
+            </p>
+
+            <form id="editPermissionsForm" onsubmit="updatePermissions(event)">
+                <input type="hidden" id="editUserId">
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="editCanViewRoles">
+                        <label for="editCanViewRoles">Can View Roles</label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="editCanViewJds">
+                        <label for="editCanViewJds">Can View Job Descriptions</label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="editCanGenerateQuestions">
+                        <label for="editCanGenerateQuestions">Can Generate Questions</label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="editCanViewAnalytics">
+                        <label for="editCanViewAnalytics">Can View Analytics</label>
+                    </div>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="editCanExportData">
+                        <label for="editCanExportData">Can Export Data</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPermissionsModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+
+        // Load users on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+        });
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+
+                if (data.success) {
+                    users = data.users;
+                    renderUsers();
+                } else {
+                    showAlert('Failed to load users', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading users: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('usersTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (users.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'block';
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Permissions</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${user.full_name}</div>
+                                    <div style="font-size: 12px; color: var(--text-tertiary);">${user.email}</div>
+                                </td>
+                                <td>
+                                    <span class="badge ${user.is_active ? 'badge-active' : 'badge-inactive'}">
+                                        ${user.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="permission-grid">
+                                        ${renderPermissionBadges(user.permissions)}
+                                    </div>
+                                </td>
+                                <td style="font-size: 12px;">
+                                    ${user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-small" onclick="openEditUserModal(${user.user_id})" title="Edit email and name">
+                                            <i class="bi bi-pencil"></i> Edit User
+                                        </button>
+                                        <button class="btn btn-primary btn-small" onclick="openEditPermissionsModal(${user.user_id})" title="Edit permissions">
+                                            <i class="bi bi-shield"></i> Permissions
+                                        </button>
+                                        <button class="btn btn-primary btn-small" onclick="openResetPasswordModal(${user.user_id})" title="Reset password">
+                                            <i class="bi bi-key"></i> Reset Password
+                                        </button>
+                                        ${user.is_active ? `
+                                            <button class="btn btn-danger btn-small" onclick="deactivateUser(${user.user_id})">
+                                                <i class="bi bi-x-circle"></i> Deactivate
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderPermissionBadges(permissions) {
+            const permissionLabels = {
+                can_view_roles: 'Roles',
+                can_view_jds: 'JDs',
+                can_generate_questions: 'Questions',
+                can_view_analytics: 'Analytics',
+                can_export_data: 'Export'
+            };
+
+            return Object.entries(permissions)
+                .map(([key, value]) => `
+                    <div class="permission-item ${value ? 'permission-enabled' : 'permission-disabled'}">
+                        <i class="bi bi-${value ? 'check-circle-fill' : 'x-circle'}"></i>
+                        ${permissionLabels[key] || key}
+                    </div>
+                `).join('');
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `<div class="alert alert-${type}" style="display: block;">${message}</div>`;
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Create User Modal
+        function openCreateUserModal() {
+            document.getElementById('createUserModal').classList.add('active');
+        }
+
+        function closeCreateUserModal() {
+            document.getElementById('createUserModal').classList.remove('active');
+            document.getElementById('createUserForm').reset();
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+
+            const userData = {
+                email: document.getElementById('newEmail').value,
+                password: document.getElementById('newPassword').value,
+                full_name: document.getElementById('newFullName').value,
+                permissions: {
+                    can_view_roles: document.getElementById('newCanViewRoles').checked,
+                    can_view_jds: document.getElementById('newCanViewJds').checked,
+                    can_generate_questions: document.getElementById('newCanGenerateQuestions').checked,
+                    can_view_analytics: document.getElementById('newCanViewAnalytics').checked,
+                    can_export_data: document.getElementById('newCanExportData').checked
+                }
+            };
+
+            try {
+                const response = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    closeCreateUserModal();
+                    loadUsers();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error creating user: ' + error.message, 'error');
+            }
+        }
+
+        // Edit Permissions Modal
+        function openEditPermissionsModal(userId) {
+            const user = users.find(u => u.user_id === userId);
+            if (!user) return;
+
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUserEmail').textContent = user.email;
+
+            document.getElementById('editCanViewRoles').checked = user.permissions.can_view_roles;
+            document.getElementById('editCanViewJds').checked = user.permissions.can_view_jds;
+            document.getElementById('editCanGenerateQuestions').checked = user.permissions.can_generate_questions;
+            document.getElementById('editCanViewAnalytics').checked = user.permissions.can_view_analytics;
+            document.getElementById('editCanExportData').checked = user.permissions.can_export_data;
+
+            document.getElementById('editPermissionsModal').classList.add('active');
+        }
+
+        function closeEditPermissionsModal() {
+            document.getElementById('editPermissionsModal').classList.remove('active');
+        }
+
+        async function updatePermissions(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('editUserId').value;
+            const permissions = {
+                permissions: {
+                    can_view_roles: document.getElementById('editCanViewRoles').checked,
+                    can_view_jds: document.getElementById('editCanViewJds').checked,
+                    can_generate_questions: document.getElementById('editCanGenerateQuestions').checked,
+                    can_view_analytics: document.getElementById('editCanViewAnalytics').checked,
+                    can_export_data: document.getElementById('editCanExportData').checked
+                }
+            };
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(permissions)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    closeEditPermissionsModal();
+                    loadUsers();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating permissions: ' + error.message, 'error');
+            }
+        }
+
+        async function deactivateUser(userId) {
+            const user = users.find(u => u.user_id === userId);
+            if (!user) return;
+
+            if (!confirm(`Are you sure you want to deactivate ${user.email}? They will no longer be able to log in.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadUsers();
+                } else {
+                    showAlert(data.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error deactivating user: ' + error.message, 'error');
+            }
+        }
+
+        // Logout (POST method required)
+        async function logout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/admin/login';
+            }
+        }
+
+        // Edit User Modal Functions
+        function openEditUserModal(userId) {
+            const user = users.find(u => u.user_id === userId);
+            if (!user) return;
+
+            document.getElementById('editUserIdMain').value = userId;
+            document.getElementById('editUserEmailInput').value = user.email;
+            document.getElementById('editUserFullName').value = user.full_name;
+
+            document.getElementById('editUserModal').classList.add('active');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.remove('active');
+            document.getElementById('editUserForm').reset();
+        }
+
+        async function updateUser(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('editUserIdMain').value;
+            const userData = {
+                email: document.getElementById('editUserEmailInput').value,
+                full_name: document.getElementById('editUserFullName').value
+            };
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('User details updated successfully!', 'success');
+                    closeEditUserModal();
+                    loadUsers();
+                } else {
+                    showAlert(data.error || 'Failed to update user details', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating user: ' + error.message, 'error');
+            }
+        }
+
+        // Reset Password Modal Functions
+        function openResetPasswordModal(userId) {
+            const user = users.find(u => u.user_id === userId);
+            if (!user) return;
+
+            document.getElementById('resetPasswordUserId').value = userId;
+            document.getElementById('resetPasswordUserEmail').textContent = user.email;
+
+            document.getElementById('resetPasswordModal').classList.add('active');
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('resetPasswordModal').classList.remove('active');
+            document.getElementById('resetPasswordForm').reset();
+        }
+
+        async function resetPassword(event) {
+            event.preventDefault();
+
+            const newPassword = document.getElementById('newPasswordForUser').value;
+            const confirmPassword = document.getElementById('confirmPasswordForUser').value;
+
+            // Client-side validation
+            if (newPassword !== confirmPassword) {
+                showAlert('Passwords do not match!', 'error');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('Password must be at least 8 characters!', 'error');
+                return;
+            }
+
+            const userId = document.getElementById('resetPasswordUserId').value;
+
+            try {
+                const response = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: newPassword })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Password reset successfully! User can now login with the new password.', 'success');
+                    closeResetPasswordModal();
+                    loadUsers();
+                } else {
+                    showAlert(data.error || 'Failed to reset password', 'error');
+                }
+            } catch (error) {
+                showAlert('Error resetting password: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
+
